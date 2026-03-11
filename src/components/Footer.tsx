@@ -1,9 +1,4 @@
-﻿import logoSite from "../assets/logo-site.png";
-
-const TupanMark = () => (
-  <img src={logoSite} alt="TUPAN" style={{ width:32, height:32, objectFit:"contain", display:"block" }} />
-);
-
+﻿
 const SOCIALS = [
   { icon:"fab fa-x-twitter",  href:"https://twitter.com/tupan_io",                          title:"Twitter/X" },
   { icon:"fab fa-telegram",   href:"https://t.me/TupanGlobal",                              title:"Telegram" },
@@ -27,7 +22,6 @@ const Footer = () => (
         {/* Brand */}
         <div>
           <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
-            <TupanMark />
           </div>
           <p style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:10, color:"rgba(136,152,170,0.4)", lineHeight:1.7, maxWidth:220 }}>
             Real World Asset lastreado em floresta amazônica. Dividendos anuais em USDC.

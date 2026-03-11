@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import CalculadoraSection from "../components/CalculadoraSection";
-import logoSite from "../assets/logo-site.png";
 
 // ── PIX key (chave aleatória de demonstração) ──
 const PIX_CHAVE = "00020126580014BR.GOV.BCB.PIX0136tupan@tupan.io5204000053039865802BR5913TUPAN PROTOCOL6009SAO PAULO62070503***6304";
@@ -342,7 +341,6 @@ export default function Transacao() {
         {/* ── TOP BAR ── */}
         <header className="swap-topbar">
           <div className="swap-topbar-left">
-            <div className="swap-logo"><img src={logoSite} alt="TUPAN" style={{ width:36, height:36, objectFit:"contain" }} /></div>
             <button className="swap-hamburger">
               <span /><span /><span />
             </button>

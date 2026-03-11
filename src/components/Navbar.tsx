@@ -1,9 +1,4 @@
 ﻿import { useState, useEffect } from "react";
-import logoSite from "../assets/LOGO-SITEE.png";
-
-const Logo = () => (
-  <img src={logoSite} alt="TUPAN" style={{ width:48, height:48, objectFit:"contain", display:"block" }} />
-);
 
 const navLinks = [
   { label: "Início",      href: "#hero" },
@@ -78,7 +73,6 @@ const Navbar = () => {
         {/* Main nav */}
           <div className="tupan-container" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", height:68 }}>
           <a href="#hero" style={{ display:"flex", alignItems:"center", gap:10, textDecoration:"none" }}>
-            <Logo />
           </a>
 
           <ul style={{ display:"flex", alignItems:"center", gap:28, listStyle:"none", margin:0, padding:0 }} className="hidden lg:flex">
@@ -119,7 +113,6 @@ const Navbar = () => {
       {mobileOpen && (
         <div style={{ position:"fixed", inset:0, zIndex:99, background:"rgba(10,17,13,0.98)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:28 }}>
           <button onClick={() => setMobileOpen(false)} style={{ position:"absolute", top:20, right:20, background:"none", border:"1px solid rgba(163,224,0,0.3)", borderRadius:4, color:"var(--t-green)", fontSize:18, width:36, height:36, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
-          <img src={logoSite} alt="TUPAN" style={{ width:100, height:100, objectFit:"contain", marginBottom:8 }} />
           {navLinks.map(l => (
             <a key={l.label} href={l.href} onClick={() => setMobileOpen(false)}
               style={{ color:"#c8d6e5", fontSize:22, fontFamily:"Space Grotesk,sans-serif", fontWeight:700, textDecoration:"none", textTransform:"uppercase", letterSpacing:2 }}
