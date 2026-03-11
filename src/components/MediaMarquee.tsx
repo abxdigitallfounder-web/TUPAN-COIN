@@ -1,43 +1,43 @@
 const mediaOutlets = [
   {
     name: "Bloomberg",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/New_bloomberg_logo.svg/1024px-New_bloomberg_logo.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/New_bloomberg_logo.svg/1200px-New_bloomberg_logo.svg.png",
   },
   {
     name: "Wall Street Journal",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/WSJ_Logo.svg/1024px-WSJ_Logo.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/WSJ_Logo.svg/1200px-WSJ_Logo.svg.png",
   },
   {
     name: "Financial Times",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Financial_Times_corporate_logo_%28no_background%29.svg/1024px-Financial_Times_corporate_logo_%28no_background%29.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Financial_Times_corporate_logo_%28no_background%29.svg/1200px-Financial_Times_corporate_logo_%28no_background%29.svg.png",
   },
   {
     name: "Reuters",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Reuters_2024.svg/1024px-Reuters_2024.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Reuters_logo.svg/1200px-Reuters_logo.svg.png",
   },
   {
     name: "Forbes",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Forbes_logo.svg/1024px-Forbes_logo.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Forbes_logo.svg/1200px-Forbes_logo.svg.png",
   },
   {
     name: "CNBC",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/CNBC_logo.svg/1024px-CNBC_logo.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/CNBC_logo.svg/1200px-CNBC_logo.svg.png",
   },
   {
     name: "The Economist",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/The_Economist_Logo.svg/1024px-The_Economist_Logo.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/The_Economist_Logo.svg/1200px-The_Economist_Logo.svg.png",
   },
   {
     name: "MarketWatch",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/MarketWatch_Logo.svg/1024px-MarketWatch_Logo.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/MarketWatch_Logo.svg/1200px-MarketWatch_Logo.svg.png",
   },
   {
     name: "Barron's",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Barrons_logo.svg/1024px-Barrons_logo.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Barrons_logo.svg/1200px-Barrons_logo.svg.png",
   },
   {
     name: "Investopedia",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Investopedia_Logo.svg/1024px-Investopedia_Logo.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Investopedia_Logo.svg/1200px-Investopedia_Logo.svg.png",
   },
 ];
 

@@ -6,7 +6,8 @@ const pressArticles = [
     label: "REPORTAGEM",
     title: "Como ESG e blockchain podem estar na costura de um agro mais sustentável",
     url: "https://forbes.com.br/forbes-agro/2023/04/como-esg-e-blockchain-podem-estar-na-costura-de-um-agro-mais-sustentavel/",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Forbes_logo.svg/1024px-Forbes_logo.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Forbes_logo.svg/1200px-Forbes_logo.svg.png",
+    image: "https://forbes.com.br/wp-content/uploads/2023/04/agro_floresta_12abr23_LeoFFreitas_Guettyimages-768x512.jpg",
   },
   {
     name: "InfoMoney",
@@ -14,6 +15,7 @@ const pressArticles = [
     title: "Criptomoeda brasileira com estratégia ESG é listada em uma das maiores corretoras",
     url: "https://www.infomoney.com.br/mercados/criptomoeda-brasileira-com-estrategia-esg-mco2-e-listada-em-uma-das-maiores-corretoras-do-mundo/",
     logo: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Infomoney_logo_2020.png",
+    image: "https://www.infomoney.com.br/wp-content/uploads/2020/10/GettyImages-943875208.jpg?w=1536&quality=70&strip=all",
   },
   {
     name: "Brazil Economy",
@@ -21,6 +23,7 @@ const pressArticles = [
     title: "ESG na Amazônia: Polo de Manaus transforma sustentabilidade em vantagem competitiva",
     url: "https://brazileconomy.com.br/esg/2025/08/esg-na-amazonia-polo-de-manaus-transforma-sustentabilidade-em-vantagem-competitiva/",
     logo: "https://brazileconomy.com.br/wp-content/uploads/2025/02/Logo-Site_BrazilEconomy_Final-5-e1739506692881.png",
+    image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&q=80",
   },
   {
     name: "Ambipar",
@@ -28,6 +31,7 @@ const pressArticles = [
     title: "Como as criptos podem ajudar projetos ambientais no Brasil",
     url: "https://ambipar.com/noticias/como-as-criptos-podem-ajudar-projetos-ambientais-no-brasil/",
     logo: "https://ambipar.com/wp-content/uploads/2023/08/Logo-Ambipar-Verde.svg",
+    image: "https://images.unsplash.com/photo-1497435334941-8c899a9bd0ee?w=600&q=80",
   },
 ];
 
@@ -46,18 +50,28 @@ const PressSection = () => {
               rel="noopener noreferrer"
               className="glass-panel flex flex-col transition-all duration-300 hover:border-[var(--t-green)] group hover:-translate-y-1 flex-shrink-0 w-[72vw] md:w-auto snap-center md:snap-align-none overflow-hidden"
             >
-              {/* Logo image area */}
-              <div className="h-36 w-full flex items-center justify-center bg-white/5 p-8 border-b border-white/5">
+              {/* Article image with logo overlay */}
+              <div className="h-36 w-full relative overflow-hidden border-b border-white/5">
                 <img
-                  src={article.logo}
-                  alt={`${article.name} logo`}
-                  className="max-h-full max-w-full object-contain filter brightness-0 invert opacity-60 group-hover:opacity-100 transition-opacity duration-300"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                    (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                  }}
+                  src={article.image}
+                  alt={article.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <span className="hidden text-xl font-bold text-white tracking-widest uppercase font-mono">{article.name}</span>
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300" />
+                {/* Logo badge */}
+                <div className="absolute bottom-2 left-3 bg-black/60 backdrop-blur-sm rounded px-2 py-1">
+                  <img
+                    src={article.logo}
+                    alt={`${article.name} logo`}
+                    className="h-4 max-w-[80px] object-contain"
+                    style={{ filter: "brightness(0) invert(1)" }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                      (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
+                    }}
+                  />
+                  <span className="hidden text-xs font-bold text-white uppercase font-mono">{article.name}</span>
+                </div>
               </div>
 
               {/* Text area */}

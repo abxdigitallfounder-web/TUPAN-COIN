@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import PressSection from "@/components/PressSection";
-import MediaMarquee from "@/components/MediaMarquee";
 import CalculadoraSection from "@/components/CalculadoraSection";
 import MapaLastroSection from "@/components/MapaLastroSection";
 import LogosSection from "@/components/LogosSection";
@@ -45,7 +44,6 @@ const Index = () => {
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-deep)" }}>
       <HeroSection />
-      <MediaMarquee />
       <PressSection />
       <hr className="hr" />
       <CalculadoraSection />
