@@ -8,7 +8,6 @@ const FaqSection = () => (
   <section id="faq" style={{ background:"var(--t-surface)", padding:"90px 0" }}>
     <div className="tupan-container">
       <div className="reveal" style={{ marginBottom:40 }}>
-        <span className="s-label">// DOCUMENTAÇÃO</span>
         <h2 className="s-title">Perguntas <span style={{ color:"var(--t-green)" }}>Frequentes</span></h2>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:1, background:"var(--t-border)", borderRadius:6, overflow:"hidden" }}>
