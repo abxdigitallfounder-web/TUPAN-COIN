@@ -1,177 +1,233 @@
 ﻿import { useState } from "react";
 
-// 60.000% ROI over 36 months = 600x multiplier
-const ROI_36M = 600;
-const MIN = 1;
-const MAX = 1000000;
+const tiers = [
+  { valor: 60,    pct: 30.00,  diario: 1.28,  final: 78    },
+  { valor: 110,   pct: 31.81,  diario: 2.50,  final: 145   },
+  { valor: 280,   pct: 32.14,  diario: 6.42,  final: 370   },
+  { valor: 600,   pct: 40.00,  diario: 17.14, final: 840   },
+  { valor: 900,   pct: 41.11,  diario: 26.42, final: 1270  },
+  { valor: 1400,  pct: 42.00,  diario: 42.00, final: 1988  },
+  { valor: 2100,  pct: 49.00,  diario: 73.50, final: 3129  },
+];
 
-const fmtBRL = (n: number) =>
-  "R$ " + n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt = (n: number) =>
+  "R$\u00a0" + n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const CalculadoraSection = () => {
-  const [inv, setInv] = useState(100);
-  const [inputStr, setInputStr] = useState("100");
-  const [period, setPeriod] = useState(24);
-
-  const handleInput = (val: string) => {
-    setInputStr(val);
-    const n = parseFloat(val.replace(/[^0-9.]/g, ""));
-    if (!isNaN(n) && n >= MIN) setInv(n);
-  };
-
-  const ratio     = period / 36;
-  const roiPct    = ROI_36M * ratio;
-  const total     = Math.round(inv * roiPct);
-  const dividends = Math.round(total * 0.25);
-  const tokenGain = total - dividends;
-  const pct       = Math.min(100, ((Math.min(inv, MAX) - MIN) / (MAX - MIN)) * 100).toFixed(1) + "%";
+  const [selected, setSelected] = useState(3);
+  const tier = tiers[selected];
+  const lucro = tier.final - tier.valor;
 
   return (
-    <section id="calculadora" style={{ background:"var(--t-surface)", padding:"90px 0", position:"relative", overflow:"hidden" }}>
-      <div style={{ position:"absolute", top:0, right:0, width:300, height:300, background:"radial-gradient(circle, rgba(163,224,0,0.04) 0%, transparent 70%)", pointerEvents:"none" }}/>
+    <section
+      id="calculadora"
+      style={{
+        background: "var(--t-bg)",
+        padding: "100px 0 80px",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div className="tupan-container" style={{ maxWidth: 760, margin: "0 auto" }}>
 
-      <div className="tupan-container">
-        <div style={{ marginBottom:48 }}>
-          <span className="s-label">// YIELD CALCULATOR</span>
-          <h2 className="s-title">
-            Simule Seu <span style={{ color:"var(--t-green)" }}>Retorno</span> em Tempo Real
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 64 }}>
+          <p style={{
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: 10,
+            letterSpacing: "0.25em",
+            color: "var(--t-green)",
+            textTransform: "uppercase",
+            marginBottom: 16,
+          }}>
+            Simulador de Retorno
+          </p>
+          <h2 style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: "clamp(28px, 4vw, 48px)",
+            fontWeight: 700,
+            color: "#fff",
+            letterSpacing: "-1px",
+            lineHeight: 1.1,
+            marginBottom: 0,
+          }}>
+            Quanto você quer investir?
           </h2>
-          <p className="s-sub">Execute projeções baseadas em dados históricos do mercado de créditos de carbono. Arraste o slider ou digite o valor e veja seu portfólio crescer.</p>
         </div>
 
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:2, background:"var(--t-border)" }} className="calc-grid">
-          {/* Input panel */}
-          <div style={{ background:"var(--t-bg)", padding:"36px 32px" }}>
-            <div style={{
-              display:"flex", alignItems:"center", gap:8, marginBottom:28,
-              fontFamily:"'IBM Plex Mono',monospace", fontSize:10, color:"rgba(136,152,170,0.5)", letterSpacing:2,
-              borderBottom:"1px solid var(--t-border)", paddingBottom:12,
+        {/* Tier selector */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(7, 1fr)",
+          gap: 4,
+          marginBottom: 56,
+        }} className="tier-grid">
+          {tiers.map((t, i) => (
+            <button
+              key={i}
+              onClick={() => setSelected(i)}
+              style={{
+                padding: "14px 4px",
+                border: "1px solid",
+                borderColor: selected === i ? "var(--t-green)" : "rgba(255,255,255,0.08)",
+                background: selected === i ? "rgba(0,230,118,0.06)" : "transparent",
+                borderRadius: 8,
+                cursor: "pointer",
+                transition: "all 0.2s",
+                textAlign: "center",
+              }}
+            >
+              <p style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: 13,
+                fontWeight: 700,
+                color: selected === i ? "var(--t-green)" : "rgba(255,255,255,0.5)",
+                marginBottom: 2,
+              }}>
+                {t.valor >= 1000 ? `R$${(t.valor/1000).toLocaleString("pt-BR",{minimumFractionDigits:1})}k` : `R$${t.valor}`}
+              </p>
+              <p style={{
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: 9,
+                color: selected === i ? "rgba(0,230,118,0.6)" : "rgba(255,255,255,0.2)",
+              }}>
+                {t.pct.toFixed(0)}%
+              </p>
+            </button>
+          ))}
+        </div>
+
+        {/* Result card */}
+        <div style={{
+          border: "1px solid rgba(255,255,255,0.07)",
+          borderRadius: 20,
+          overflow: "hidden",
+          background: "rgba(255,255,255,0.02)",
+          backdropFilter: "blur(20px)",
+        }}>
+
+          {/* Main number */}
+          <div style={{
+            padding: "48px 40px 40px",
+            textAlign: "center",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+          }}>
+            <p style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 10,
+              letterSpacing: "0.2em",
+              color: "rgba(255,255,255,0.3)",
+              textTransform: "uppercase",
+              marginBottom: 12,
             }}>
-              INPUT_PARAMS.json
-            </div>
-
-            <p style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:11, color:"rgba(136,152,170,0.7)", letterSpacing:1, marginBottom:8, textTransform:"uppercase" }}>
-              Valor do Investimento
+              Em 14 dias, seu retorno total será
             </p>
-
-            {/* Manual input */}
-            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16 }}>
-              <span style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:22, fontWeight:700, color:"var(--t-green)" }}>R$</span>
-              <input
-                type="number" min={MIN} value={inputStr}
-                onChange={e => handleInput(e.target.value)}
-                style={{
-                  background:"transparent", border:"none", borderBottom:"1px solid rgba(163,224,0,0.3)",
-                  color:"var(--t-green)", fontFamily:"'IBM Plex Mono',monospace", fontSize:36, fontWeight:700,
-                  width:"100%", outline:"none", paddingBottom:4,
-                } as React.CSSProperties}
-              />
-            </div>
-
-            <input type="range" min={MIN} max={MAX} step={100} value={Math.min(inv, MAX)}
-              onChange={e => { const n = Number(e.target.value); setInv(n); setInputStr(String(n)); }}
-              className="calc-slider"
-              style={{ width:"100%", marginBottom:8, "--pct": pct } as React.CSSProperties}
-            />
-            <div style={{ display:"flex", justifyContent:"space-between", fontFamily:"'IBM Plex Mono',monospace", fontSize:9, color:"rgba(136,152,170,0.4)", marginBottom:32 }}>
-              <span>R$ 1</span><span>R$ 1.000.000</span>
-            </div>
-
-            <p style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:11, color:"rgba(136,152,170,0.7)", letterSpacing:1, marginBottom:12, textTransform:"uppercase" }}>
-              Período de Holding
+            <p style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: "clamp(48px, 8vw, 80px)",
+              fontWeight: 800,
+              color: "var(--t-green)",
+              lineHeight: 1,
+              letterSpacing: "-2px",
+              textShadow: "0 0 60px rgba(0,230,118,0.3)",
+              marginBottom: 8,
+            }}>
+              {fmt(tier.final)}
             </p>
-            <div style={{ display:"flex", gap:8 }}>
-              {[6,12,24,36].map(m => (
-                <button key={m} onClick={() => setPeriod(m)}
-                  style={{
-                    flex:1, padding:"8px 4px", border:"1px solid",
-                    borderColor: period === m ? "var(--t-green)" : "var(--t-border)",
-                    background: period === m ? "rgba(163,224,0,0.08)" : "transparent",
-                    color: period === m ? "var(--t-green)" : "rgba(136,152,170,0.6)",
-                    fontFamily:"'IBM Plex Mono',monospace", fontSize:11, cursor:"pointer",
-                    borderRadius:3, transition:"all .2s",
-                  }}>
-                  {m}m
-                </button>
-              ))}
-            </div>
-
-            <div style={{ marginTop:32, padding:"16px 0", borderTop:"1px solid var(--t-border)" }}>
-              {[
-                ["ROI_PROJETADO",    `${(roiPct * 100).toLocaleString("pt-BR", { maximumFractionDigits:0 })}% em ${period}m`],
-                ["ROI_36M_BASE",     "60.000% (600x)"],
-                ["MOEDA_DIVIDENDO",  "USDC (Dólar digital)"],
-              ].map(([k,v]) => (
-                <div key={k} style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-                  <span style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:10, color:"rgba(136,152,170,0.4)" }}>{k}</span>
-                  <span style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:10, color:"rgba(200,214,229,0.8)" }}>{v}</span>
-                </div>
-              ))}
-            </div>
+            <p style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 13,
+              color: "rgba(0,230,118,0.6)",
+            }}>
+              +{fmt(lucro)} de lucro ({tier.pct.toFixed(2)}% de retorno)
+            </p>
           </div>
 
-          {/* Output panel */}
-          <div style={{ background:"var(--t-bg)", padding:"36px 32px" }}>
-            <div style={{
-              display:"flex", alignItems:"center", justifyContent:"space-between",
-              marginBottom:28,
-              fontFamily:"'IBM Plex Mono',monospace", fontSize:10, color:"rgba(136,152,170,0.5)", letterSpacing:2,
-              borderBottom:"1px solid var(--t-border)", paddingBottom:12,
-            }}>
-              <span>OUTPUT_PROJECTION.json</span>
-              <span style={{ color:"var(--t-green)" }}>▶ RUNNING</span>
-            </div>
-
-            {/* ROI badge */}
-            <div style={{
-              background:"rgba(163,224,0,0.04)", border:"1px solid rgba(163,224,0,0.2)",
-              borderRadius:6, padding:"24px", textAlign:"center", marginBottom:20,
-            }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:9, letterSpacing:2, color:"rgba(136,152,170,0.6)", marginBottom:6, textTransform:"uppercase" }}>
-                RETORNO TOTAL EM {period} MESES
-              </p>
-              <p style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:56, fontWeight:700, color:"var(--t-green)", lineHeight:1, textShadow:"0 0 40px rgba(163,224,0,0.4)" }}>
-                +{(roiPct * 100).toLocaleString("pt-BR", { maximumFractionDigits:0 })}%
-              </p>
-            </div>
-
-            {/* Breakdown */}
+          {/* Stats row */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+          }}>
             {[
-              { label:"DIVIDENDOS", sub:"Recebíveis em USDC", val:fmtBRL(dividends), color:"#f5a623" },
-              { label:"VALORIZAÇÃO TOKEN", sub:"Apreciação do ativo TUPAN", val:fmtBRL(tokenGain), color:"var(--t-green)" },
-              { label:"RETORNO TOTAL", sub:"Dividendos + apreciação", val:fmtBRL(total), color:"#fff", highlight:true },
-            ].map(c => (
-              <div key={c.label} style={{
-                padding:"18px 20px", marginBottom:8, borderRadius:4,
-                background: c.highlight ? "rgba(163,224,0,0.05)" : "rgba(255,255,255,0.02)",
-                border:`1px solid ${c.highlight ? "rgba(163,224,0,0.2)" : "var(--t-border)"}`,
-                display:"flex", justifyContent:"space-between", alignItems:"center",
-              }}>
-                <div>
-                  <p style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:10, letterSpacing:1, color:c.color, fontWeight:c.highlight ? 700 : 400, marginBottom:2 }}>{c.label}</p>
-                  <p style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:9, color:"rgba(136,152,170,0.5)" }}>{c.sub}</p>
-                </div>
-                <div style={{ textAlign:"right" }}>
-                  <p style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:c.highlight ? 20 : 17, fontWeight:700, color:c.color }}>{c.val}</p>
-                </div>
+              { label: "Investido", value: fmt(tier.valor), sub: "Valor de entrada" },
+              { label: "Ganho diário", value: fmt(tier.diario), sub: "Por dia, durante 14 dias", highlight: true },
+              { label: "Duração", value: "14 dias", sub: "Período do ciclo" },
+            ].map((s, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: "28px 24px",
+                  borderRight: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                  textAlign: "center",
+                }}
+              >
+                <p style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 9,
+                  letterSpacing: "0.15em",
+                  color: "rgba(255,255,255,0.25)",
+                  textTransform: "uppercase",
+                  marginBottom: 10,
+                }}>
+                  {s.label}
+                </p>
+                <p style={{
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: "clamp(18px, 2.5vw, 26px)",
+                  fontWeight: 700,
+                  color: s.highlight ? "var(--t-green)" : "#fff",
+                  letterSpacing: "-0.5px",
+                  marginBottom: 6,
+                }}>
+                  {s.value}
+                </p>
+                <p style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 9,
+                  color: "rgba(255,255,255,0.2)",
+                }}>
+                  {s.sub}
+                </p>
               </div>
             ))}
-
-            <p style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:9, color:"rgba(136,152,170,0.3)", marginTop:16, lineHeight:1.7 }}>
-              * Projeção baseada em APY histórico do mercado VCS/Gold Standard.<br/>
-              Rendimentos passados não garantem resultados futuros.
-            </p>
           </div>
         </div>
 
-        <div style={{ marginTop:20, display:"flex", justifyContent:"center" }}>
-          <a href="/transacao" className="btn btn-solid btn-outline-lg">
-            ⬡ EXECUTAR INVESTIMENTO
+        {/* CTA */}
+        <div style={{ textAlign: "center", marginTop: 40 }}>
+          <a
+            href="/transacao"
+            style={{
+              display: "inline-block",
+              padding: "16px 48px",
+              background: "var(--t-green)",
+              color: "#000",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 700,
+              fontSize: 14,
+              letterSpacing: "1px",
+              textTransform: "uppercase",
+              borderRadius: 100,
+              textDecoration: "none",
+              transition: "opacity 0.2s",
+            }}
+            onMouseOver={e => (e.currentTarget.style.opacity = "0.85")}
+            onMouseOut={e => (e.currentTarget.style.opacity = "1")}
+          >
+            Começar agora
           </a>
         </div>
+
       </div>
+
+      <style>{`
+        @media (max-width: 600px) {
+          .tier-grid { grid-template-columns: repeat(4, 1fr) !important; }
+        }
+      `}</style>
     </section>
   );
 };
 
 export default CalculadoraSection;
+

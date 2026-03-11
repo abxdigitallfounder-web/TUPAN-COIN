@@ -3,7 +3,6 @@ import HeroSection from "@/components/HeroSection";
 import PressSection from "@/components/PressSection";
 import CalculadoraSection from "@/components/CalculadoraSection";
 import MapaLastroSection from "@/components/MapaLastroSection";
-import LogosSection from "@/components/LogosSection";
 import HowItWorks from "@/components/HowItWorks";
 import FaqSection from "@/components/FaqSection";
 import CtaSection from "@/components/CtaSection";
@@ -49,8 +48,6 @@ const Index = () => {
       <CalculadoraSection />
       <hr className="hr" />
       <MapaLastroSection />
-      <hr className="hr" />
-      <LogosSection />
       <hr className="hr" />
       <HowItWorks />
       <hr className="hr" />
