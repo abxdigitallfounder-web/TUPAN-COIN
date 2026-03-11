@@ -4,8 +4,8 @@ const HeroSection = () => {
   return (
     <section
       id="hero"
-      className="relative w-full overflow-hidden flex flex-col items-center justify-start bg-black"
-      style={{ minHeight: "82dvh" }}
+      className="relative w-full overflow-hidden flex flex-col items-center justify-between bg-black"
+      style={{ minHeight: "82dvh", paddingBottom: 24 }}
     >
       {/* ── Background video ── */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -39,12 +39,11 @@ const HeroSection = () => {
       {/* ── Main content ── */}
       <div
         className="relative z-10 flex flex-col items-center w-full px-4"
-        style={{ maxWidth: 420, paddingTop: 56, paddingBottom: 16 }}
+        style={{ maxWidth: 420, paddingTop: 56, paddingBottom: 0 }}
       >
         {/* Headline */}
         <h1
           className="text-white font-extrabold text-center mb-4"
-          style={{ lineHeight: 1.2 }}
           style={{
             fontFamily: "'Space Grotesk', sans-serif",
             fontSize: "clamp(22px, 5.5vw, 40px)",
@@ -67,7 +66,6 @@ const HeroSection = () => {
         {/* VSL card */}
         <div
           className="w-full rounded-xl overflow-hidden mb-4"
-          style={{ maxHeight: 220 }}
           style={{
             aspectRatio: "16/9",
             position: "relative",
@@ -124,7 +122,7 @@ const HeroSection = () => {
       </div>
 
       {/* ── Authority footer ── */}
-      <div className="absolute bottom-6 w-full flex flex-col items-center z-10">
+      <div className="relative w-full flex flex-col items-center z-10" style={{ marginTop: 32 }}>
         <p
           className="uppercase text-center mb-3"
           style={{
