@@ -31,7 +31,7 @@ const pressArticles = [
     title: "Como as criptos podem ajudar projetos ambientais no Brasil",
     url: "https://ambipar.com/noticias/como-as-criptos-podem-ajudar-projetos-ambientais-no-brasil/",
     logo: "https://ambipar.com/wp-content/uploads/2023/08/Logo-Ambipar-Verde.svg",
-    image: "https://images.unsplash.com/photo-1497435334941-8c899a9bd0ee?w=600&q=80",
+    image: "https://ambipar.com/site2020/wp-content/uploads/2024/01/Como-as-Criptos-Podem-Ajudar-Projetos-Ambientais-no-Brasil.jpg",
   },
 ];
 

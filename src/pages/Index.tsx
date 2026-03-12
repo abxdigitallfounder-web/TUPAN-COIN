@@ -1,11 +1,11 @@
 import { useEffect } from "react";
+import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import PressSection from "@/components/PressSection";
 import CalculadoraSection from "@/components/CalculadoraSection";
 import MapaLastroSection from "@/components/MapaLastroSection";
 import HowItWorks from "@/components/HowItWorks";
 import FaqSection from "@/components/FaqSection";
-import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -42,6 +42,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-deep)" }}>
+      <Navbar />
       <HeroSection />
       <PressSection />
       <hr className="hr" />
@@ -52,7 +53,6 @@ const Index = () => {
       <HowItWorks />
       <hr className="hr" />
       <FaqSection />
-      <CtaSection />
       <Footer />
     </div>
   );
