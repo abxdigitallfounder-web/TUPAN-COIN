@@ -7,6 +7,7 @@ import MapaLastroSection from "@/components/MapaLastroSection";
 import HowItWorks from "@/components/HowItWorks";
 import FaqSection from "@/components/FaqSection";
 import Footer from "@/components/Footer";
+import ProjetoCarousel from "@/components/ProjetoCarousel";
 
 const Index = () => {
   useEffect(() => {
@@ -46,9 +47,11 @@ const Index = () => {
       <HeroSection />
       <PressSection />
       <hr className="hr" />
-      <CalculadoraSection />
+      <ProjetoCarousel />
       <hr className="hr" />
       <MapaLastroSection />
+      <hr className="hr" />
+      <CalculadoraSection />
       <hr className="hr" />
       <HowItWorks />
       <hr className="hr" />

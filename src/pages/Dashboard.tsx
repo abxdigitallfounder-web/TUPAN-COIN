@@ -23,116 +23,29 @@ type Proposal = typeof PROPOSALS[number];
 
 // ── SATELLITE MAP ─────────────────────────────────────────
 function SatelliteMap({ trees, selected, onSelect }: { trees: Tree[]; selected: Tree | null; onSelect: (t: Tree) => void }) {
-  const cvs = useRef<HTMLCanvasElement>(null);
-  const raf = useRef<number>(0);
-  const drag = useRef(false);
-  const last = useRef({ x: 0, y: 0 });
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-
-  useEffect(() => {
-    const c = cvs.current; if (!c) return;
-    const ctx = c.getContext("2d")!;
-    const draw = (ts: number) => {
-      const W = c.offsetWidth, H = c.offsetHeight;
-      c.width = W * devicePixelRatio; c.height = H * devicePixelRatio;
-      ctx.scale(devicePixelRatio, devicePixelRatio);
-      const t = ts * 0.001;
-
-      ctx.fillStyle = "#0a1a0a"; ctx.fillRect(0, 0, W, H);
-
-      ([
-        [0.15, 0.25, 0.22, "#0f2a0f"], [0.55, 0.35, 0.28, "#112b11"], [0.8, 0.6, 0.18, "#0e280e"],
-        [0.35, 0.65, 0.2,  "#102a10"], [0.7,  0.2,  0.15, "#0d260d"], [0.45, 0.5, 0.3, "#122c12"],
-        [0.1,  0.7,  0.12, "#0f280f"], [0.9,  0.4,  0.14, "#112a11"],
-      ] as [number, number, number, string][]).forEach(([x, y, r, col]) => {
-        const g = ctx.createRadialGradient(x*W+pan.x*.4, y*H+pan.y*.4, 0, x*W, y*H, r*W*zoom);
-        g.addColorStop(0, col + "ee"); g.addColorStop(1, "transparent");
-        ctx.beginPath(); ctx.arc(x*W+pan.x*.4, y*H+pan.y*.4, r*W*zoom, 0, Math.PI*2);
-        ctx.fillStyle = g; ctx.fill();
-      });
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(0, H*.42+pan.y*.25);
-      ctx.bezierCurveTo(W*.28, H*.37, W*.5, H*.52, W*.72, H*.43);
-      ctx.bezierCurveTo(W*.88, H*.36, W*.96, H*.48, W, H*.42);
-      ctx.strokeStyle = "rgba(30,60,100,0.6)"; ctx.lineWidth = 8*zoom; ctx.stroke();
-      ctx.strokeStyle = "rgba(40,80,140,0.25)"; ctx.lineWidth = 14*zoom; ctx.stroke();
-      ctx.restore();
-
-      ctx.strokeStyle = "rgba(255,255,255,0.018)"; ctx.lineWidth = .5;
-      for (let i = 0; i < W; i += 48) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke(); }
-      for (let i = 0; i < H; i += 48) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke(); }
-
-      const pos: [number, number][] = [[.42, .37], [.46, .43], [.43, .34]];
-      trees.forEach((tree, i) => {
-        const px = pos[i][0]*W + pan.x*.18;
-        const py = pos[i][1]*H + pan.y*.18;
-        const isSel = selected?.id === tree.id;
-        const p = .5 + Math.sin(t*2.2+i)*0.5;
-
-        if (isSel) {
-          [32, 22].forEach((r, ri) => {
-            ctx.beginPath(); ctx.arc(px, py, r+Math.sin(t*3)*2, 0, Math.PI*2);
-            ctx.strokeStyle = `rgba(52,211,153,${(1-ri*.4)*p*.35})`; ctx.lineWidth = 1; ctx.stroke();
-          });
-        }
-        ctx.beginPath(); ctx.arc(px, py, isSel ? 7 : 5, 0, Math.PI*2);
-        ctx.fillStyle = isSel ? "#34D399" : "#16A34A";
-        ctx.shadowColor = "#34D399"; ctx.shadowBlur = isSel ? 16 : 6; ctx.fill();
-        ctx.shadowBlur = 0;
-
-        if (isSel) {
-          const lbl = `${tree.name} ${tree.code}`;
-          ctx.font = "500 11px -apple-system,sans-serif";
-          const tw = ctx.measureText(lbl).width;
-          ctx.fillStyle = "rgba(0,0,0,0.75)";
-          ctx.beginPath();
-          (ctx as CanvasRenderingContext2D & { roundRect: (...a: unknown[]) => void })
-            .roundRect(px-tw/2-10, py-38, tw+20, 22, 4);
-          ctx.fill();
-          ctx.fillStyle = "#34D399"; ctx.textAlign = "center";
-          ctx.fillText(lbl, px, py-23);
-        }
-      });
-
-      ctx.font = "10px 'SF Mono',monospace"; ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.textAlign = "left";
-      ctx.fillText(`${(-3.4168).toFixed(4)}°S  ${(-62.2159).toFixed(4)}°W`, 14, H-14);
-
-      ctx.save(); ctx.translate(W-36, 36);
-      ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(0, -12); ctx.lineTo(0, 12); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(12, 0); ctx.stroke();
-      ctx.font = "9px -apple-system,sans-serif"; ctx.fillStyle = "rgba(255,255,255,0.35)";
-      ctx.textAlign = "center"; ctx.fillText("N", 0, -16); ctx.restore();
-
-      raf.current = requestAnimationFrame(draw);
-    };
-    raf.current = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(raf.current);
-  }, [zoom, pan, selected, trees]);
+  const activeTree = selected ?? trees[0];
+  const mapSrc = `https://maps.google.com/maps?q=${activeTree.lat},${activeTree.lng}&t=k&z=17&output=embed&hl=pt-BR`;
 
   return (
-    <div
-      style={{ position: "relative", width: "100%", height: "100%", borderRadius: 16, overflow: "hidden", cursor: "grab" }}
-      onMouseDown={e => { drag.current = true; last.current = { x: e.clientX, y: e.clientY }; }}
-      onMouseMove={e => {
-        if (!drag.current) return;
-        setPan(p => ({ x: p.x+(e.clientX-last.current.x), y: p.y+(e.clientY-last.current.y) }));
-        last.current = { x: e.clientX, y: e.clientY };
-      }}
-      onMouseUp={() => { drag.current = false; }}
-      onMouseLeave={() => { drag.current = false; }}
-    >
-      <canvas ref={cvs} style={{ width: "100%", height: "100%", display: "block" }} />
+    <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: 16, overflow: "hidden" }}>
+      {/* Real satellite iframe */}
+      <iframe
+        key={activeTree.id}
+        src={mapSrc}
+        title="Satélite TUPAN"
+        style={{ width: "100%", height: "100%", border: "none", display: "block", pointerEvents: "auto" }}
+        allowFullScreen
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      />
 
       {/* Live badge */}
       <div style={{
         position: "absolute", top: 14, left: 14, display: "flex", alignItems: "center", gap: 7,
-        padding: "6px 12px", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(16px) saturate(180%)",
-        border: "1px solid rgba(255,255,255,0.08)", borderRadius: 100,
-        fontSize: 11, color: "rgba(255,255,255,0.55)", fontFamily: "-apple-system,sans-serif", letterSpacing: ".06em",
+        padding: "6px 12px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(16px) saturate(180%)",
+        border: "1px solid rgba(255,255,255,0.10)", borderRadius: 100,
+        fontSize: 11, color: "rgba(255,255,255,0.65)", fontFamily: "-apple-system,sans-serif", letterSpacing: ".06em",
+        pointerEvents: "none",
       }}>
         <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#34D399", boxShadow: "0 0 6px #34D399", animation: "blink 1.6s ease infinite", display: "inline-block" }} />
         SATÉLITE AO VIVO
@@ -143,33 +56,27 @@ function SatelliteMap({ trees, selected, onSelect }: { trees: Tree[]; selected: 
         {trees.map(tree => (
           <button key={tree.id} onClick={() => onSelect(tree)} style={{
             padding: "7px 14px",
-            background: selected?.id === tree.id ? "rgba(52,211,153,0.15)" : "rgba(0,0,0,0.55)",
+            background: selected?.id === tree.id ? "rgba(52,211,153,0.18)" : "rgba(0,0,0,0.65)",
             backdropFilter: "blur(16px)",
-            border: `1px solid ${selected?.id === tree.id ? "rgba(52,211,153,0.35)" : "rgba(255,255,255,0.07)"}`,
+            border: `1px solid ${selected?.id === tree.id ? "rgba(52,211,153,0.45)" : "rgba(255,255,255,0.10)"}`,
             borderRadius: 100, fontSize: 12,
-            color: selected?.id === tree.id ? "#34D399" : "rgba(255,255,255,0.5)",
+            color: selected?.id === tree.id ? "#34D399" : "rgba(255,255,255,0.6)",
             cursor: "pointer", transition: "all .2s", fontFamily: "-apple-system,sans-serif", whiteSpace: "nowrap",
-          }}>{tree.name} {tree.code}</button>
+          }}>
+            {tree.name} {tree.code}
+          </button>
         ))}
       </div>
 
-      {/* Zoom */}
+      {/* Coords badge */}
       <div style={{
-        position: "absolute", bottom: 14, right: 14, display: "flex", flexDirection: "column",
-        background: "rgba(0,0,0,0.55)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.07)",
-        borderRadius: 10, overflow: "hidden",
+        position: "absolute", bottom: 14, left: 14,
+        padding: "4px 10px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8,
+        fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: "rgba(255,255,255,0.4)",
+        pointerEvents: "none",
       }}>
-        {(["+", "−"] as const).map((l, i) => (
-          <button key={i} onClick={() => setZoom(z => Math.max(.5, Math.min(3, z+(i===0 ? .35 : -.35))))} style={{
-            width: 34, height: 34, background: "transparent", border: "none", color: "rgba(255,255,255,0.5)",
-            fontSize: 18, cursor: "pointer", borderBottom: i===0 ? "1px solid rgba(255,255,255,0.07)" : "none",
-            display: "flex", alignItems: "center", justifyContent: "center", transition: "color .15s",
-            fontFamily: "-apple-system,sans-serif",
-          }}
-            onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")}
-            onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
-          >{l}</button>
-        ))}
+        {activeTree.lat.toFixed(4)}°S &nbsp;{Math.abs(activeTree.lng).toFixed(4)}°W
       </div>
     </div>
   );
@@ -343,9 +250,14 @@ export default function Dashboard() {
           .dash-map-panel  { height: 300px; }
           .dash-tree-grid  { grid-template-columns: 1fr !important; }
           .dash-main       { padding: 24px 16px !important; }
-          .dash-nav        { overflow-x: auto; padding: 0 16px !important; }
-          .dash-header     { padding: 0 16px !important; }
           .dash-proposals-header { flex-direction: column !important; align-items: flex-start !important; }
+          .dash-header-top { padding: 0 16px !important; height: 54px !important; }
+          .dash-header-nav { display: flex !important; }
+          .dash-nav-inline  { display: none !important; }
+          .dash-divider    { display: none !important; }
+          .dash-saldo      { display: none !important; }
+          .dash-user-name  { display: none !important; }
+          .dash-user-chevron { display: none !important; }
         }
       `}</style>
 
@@ -363,32 +275,99 @@ export default function Dashboard() {
       )}
 
       {/* NAVBAR */}
-      <header style={{
-        height: 62, borderBottom: "1px solid rgba(255,255,255,0.06)",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 28px", position: "sticky", top: 0, zIndex: 100,
-        background: "rgba(8,8,8,0.90)", backdropFilter: "blur(24px) saturate(180%)",
-        gap: 16,
-      }}>
-        {/* Left: logo + nav */}
-        <div style={{ display: "flex", alignItems: "center", gap: 0, overflow: "hidden" }}>
-          {/* Logo */}
-          <a href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0, marginRight: 20 }}>
-            <img src={logoSite} alt="TUPAN" style={{ height: 32, width: "auto", display: "block" }} />
-          </a>
-          {/* Divider */}
-          <div style={{ width: 1, height: 18, background: "rgba(255,255,255,0.1)", flexShrink: 0, marginRight: 16 }} />
-          {/* Nav tabs */}
-          <nav style={{ display: "flex", gap: 2, overflowX: "auto", scrollbarWidth: "none" }}>
+      <header style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(8,8,8,0.92)", backdropFilter: "blur(24px) saturate(180%)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        {/* Top row: logo + right controls */}
+        <div className="dash-header-top" style={{
+          height: 62, display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "0 28px", gap: 16,
+        }}>
+          {/* Left: logo + inline nav (desktop) */}
+          <div style={{ display: "flex", alignItems: "center", gap: 0, overflow: "hidden", flex: 1, minWidth: 0 }}>
+            <a href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0, marginRight: 20 }}>
+              <img src={logoSite} alt="TUPAN" style={{ height: 32, width: "auto", display: "block" }} />
+            </a>
+            <div className="dash-divider" style={{ width: 1, height: 18, background: "rgba(255,255,255,0.1)", flexShrink: 0, marginRight: 16 }} />
+            {/* Nav — hidden on mobile via CSS */}
+            <nav className="dash-nav-inline" style={{ display: "flex", gap: 2, overflowX: "auto", scrollbarWidth: "none" } as React.CSSProperties}>
+              {NAV.map(n => (
+                <button key={n.id} onClick={() => setTab(n.id)} style={{
+                  padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer",
+                  fontSize: 13, fontWeight: tab === n.id ? 600 : 400, letterSpacing: "-.01em",
+                  transition: "all .15s",
+                  background: tab === n.id ? "rgba(163,224,0,0.12)" : "transparent",
+                  color: tab === n.id ? "#A3E000" : "rgba(255,255,255,0.45)",
+                  display: "flex", alignItems: "center", gap: 7, whiteSpace: "nowrap",
+                  borderBottom: tab === n.id ? "2px solid #A3E000" : "2px solid transparent",
+                }}>
+                  {n.label}
+                  {(n.badge ?? 0) > 0 && (
+                    <span style={{
+                      background: "#34D399", color: "#000", borderRadius: 100,
+                      fontSize: 10, fontWeight: 700, padding: "1px 6px", minWidth: 18,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>{n.badge}</span>
+                  )}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Right: saldo + user */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+            <div className="dash-saldo" style={{
+              display: "flex", flexDirection: "column", alignItems: "flex-end",
+              padding: "5px 14px", borderRadius: 10,
+              background: "rgba(52,211,153,0.07)",
+              border: "1px solid rgba(52,211,153,0.15)",
+            }}>
+              <span style={{ fontSize: 9, fontWeight: 600, color: "rgba(52,211,153,0.6)", letterSpacing: ".1em", textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace" }}>Saldo Acumulado</span>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#34D399", letterSpacing: "-.02em", fontVariantNumeric: "tabular-nums", lineHeight: 1.2 }}>R$ 847,32</span>
+            </div>
+            <button style={{
+              display: "flex", alignItems: "center", gap: 9,
+              padding: "5px 12px 5px 6px",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 999,
+              background: "rgba(255,255,255,0.05)",
+              cursor: "pointer", transition: "all .15s",
+            }}
+              onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.09)")}
+              onMouseOut={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+            >
+              <div style={{
+                width: 26, height: 26, borderRadius: "50%",
+                background: "linear-gradient(135deg,#A3E000,#5a8500)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 11, fontWeight: 800, color: "#050e03", flexShrink: 0,
+              }}>
+                {USER.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2)}
+              </div>
+              <span className="dash-user-name" style={{ fontSize: 13, fontWeight: 500, color: "#F5F5F7", letterSpacing: "-.01em" }}>
+                {USER.name.split(" ")[0]}
+              </span>
+              <svg className="dash-user-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ opacity: .4 }}>
+                <path d="M3 4.5L6 7.5L9 4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile nav row — shown only on mobile via CSS */}
+        <div className="dash-header-nav" style={{
+          display: "none",
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+          overflowX: "auto", scrollbarWidth: "none",
+        } as React.CSSProperties}>
+          <nav style={{ display: "flex", gap: 0, padding: "0 4px", width: "max-content", minWidth: "100%" }}>
             {NAV.map(n => (
               <button key={n.id} onClick={() => setTab(n.id)} style={{
-                padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer",
+                padding: "11px 16px", border: "none", cursor: "pointer", background: "transparent",
                 fontSize: 13, fontWeight: tab === n.id ? 600 : 400, letterSpacing: "-.01em",
                 transition: "all .15s",
-                background: tab === n.id ? "rgba(163,224,0,0.12)" : "transparent",
-                color: tab === n.id ? "#A3E000" : "rgba(255,255,255,0.45)",
-                display: "flex", alignItems: "center", gap: 7, whiteSpace: "nowrap",
+                color: tab === n.id ? "#A3E000" : "rgba(255,255,255,0.4)",
+                display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap",
                 borderBottom: tab === n.id ? "2px solid #A3E000" : "2px solid transparent",
+                flex: "1 0 auto",
               }}>
                 {n.label}
                 {(n.badge ?? 0) > 0 && (
@@ -401,49 +380,6 @@ export default function Dashboard() {
               </button>
             ))}
           </nav>
-        </div>
-
-        {/* Right: live pill + user avatar */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-          {/* Saldo acumulado */}
-          <div style={{
-            display: "flex", flexDirection: "column", alignItems: "flex-end",
-            padding: "5px 14px", borderRadius: 10,
-            background: "rgba(52,211,153,0.07)",
-            border: "1px solid rgba(52,211,153,0.15)",
-          }}>
-            <span style={{ fontSize: 9, fontWeight: 600, color: "rgba(52,211,153,0.6)", letterSpacing: ".1em", textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace" }}>Saldo Acumulado</span>
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#34D399", letterSpacing: "-.02em", fontVariantNumeric: "tabular-nums", lineHeight: 1.2 }}>R$ 847,32</span>
-          </div>
-          {/* User avatar button */}
-          <button style={{
-            display: "flex", alignItems: "center", gap: 9,
-            padding: "5px 12px 5px 6px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: 999,
-            background: "rgba(255,255,255,0.05)",
-            cursor: "pointer",
-            transition: "all .15s",
-          }}
-            onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.09)")}
-            onMouseOut={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
-          >
-            {/* Avatar circle */}
-            <div style={{
-              width: 26, height: 26, borderRadius: "50%",
-              background: "linear-gradient(135deg,#A3E000,#5a8500)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 11, fontWeight: 800, color: "#050e03", flexShrink: 0,
-            }}>
-              {USER.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2)}
-            </div>
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#F5F5F7", letterSpacing: "-.01em" }}>
-              {USER.name.split(" ")[0]}
-            </span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ opacity: .4 }}>
-              <path d="M3 4.5L6 7.5L9 4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
         </div>
       </header>
 
