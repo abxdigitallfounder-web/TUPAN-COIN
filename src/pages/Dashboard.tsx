@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import logoSite from "../assets/logo-site.png";
 
 // ── DATA ─────────────────────────────────────────────────
 const USER = { name: "Lucas Ferreira", wallet: "0x71C7...976F", tokens: 12, joinDate: "Jan 2025" };
@@ -362,23 +363,32 @@ export default function Dashboard() {
       )}
 
       {/* NAVBAR */}
-      <header className="dash-header" style={{
-        height: 52, borderBottom: "1px solid rgba(255,255,255,0.06)",
+      <header style={{
+        height: 62, borderBottom: "1px solid rgba(255,255,255,0.06)",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 32px", position: "sticky", top: 0, zIndex: 100,
-        background: "rgba(0,0,0,0.82)", backdropFilter: "blur(20px) saturate(180%)",
+        padding: "0 28px", position: "sticky", top: 0, zIndex: 100,
+        background: "rgba(8,8,8,0.90)", backdropFilter: "blur(24px) saturate(180%)",
+        gap: 16,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-          <span style={{ fontSize: 17, fontWeight: 600, letterSpacing: "-.025em", color: "#F5F5F7" }}>Tupan</span>
-          <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.1)", flexShrink: 0 }} />
-          <nav className="dash-nav" style={{ display: "flex", gap: 4 }}>
+        {/* Left: logo + nav */}
+        <div style={{ display: "flex", alignItems: "center", gap: 0, overflow: "hidden" }}>
+          {/* Logo */}
+          <a href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0, marginRight: 20 }}>
+            <img src={logoSite} alt="TUPAN" style={{ height: 32, width: "auto", display: "block" }} />
+          </a>
+          {/* Divider */}
+          <div style={{ width: 1, height: 18, background: "rgba(255,255,255,0.1)", flexShrink: 0, marginRight: 16 }} />
+          {/* Nav tabs */}
+          <nav style={{ display: "flex", gap: 2, overflowX: "auto", scrollbarWidth: "none" }}>
             {NAV.map(n => (
               <button key={n.id} onClick={() => setTab(n.id)} style={{
                 padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer",
-                fontSize: 13, fontWeight: 500, letterSpacing: "-.01em", transition: "all .15s",
-                background: tab === n.id ? "rgba(255,255,255,0.1)" : "transparent",
-                color: tab === n.id ? "#F5F5F7" : "rgba(255,255,255,0.45)",
+                fontSize: 13, fontWeight: tab === n.id ? 600 : 400, letterSpacing: "-.01em",
+                transition: "all .15s",
+                background: tab === n.id ? "rgba(163,224,0,0.12)" : "transparent",
+                color: tab === n.id ? "#A3E000" : "rgba(255,255,255,0.45)",
                 display: "flex", alignItems: "center", gap: 7, whiteSpace: "nowrap",
+                borderBottom: tab === n.id ? "2px solid #A3E000" : "2px solid transparent",
               }}>
                 {n.label}
                 {(n.badge ?? 0) > 0 && (
@@ -393,18 +403,47 @@ export default function Dashboard() {
           </nav>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.35)", letterSpacing: ".04em" }}>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#34D399", animation: "blink 2s ease infinite", display: "inline-block" }} />
-            AO VIVO
-          </div>
+        {/* Right: live pill + user avatar */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+          {/* Saldo acumulado */}
           <div style={{
-            padding: "5px 14px", background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8,
-            fontSize: 12, color: "rgba(255,255,255,0.45)", letterSpacing: ".01em",
+            display: "flex", flexDirection: "column", alignItems: "flex-end",
+            padding: "5px 14px", borderRadius: 10,
+            background: "rgba(52,211,153,0.07)",
+            border: "1px solid rgba(52,211,153,0.15)",
           }}>
-            {USER.wallet}
+            <span style={{ fontSize: 9, fontWeight: 600, color: "rgba(52,211,153,0.6)", letterSpacing: ".1em", textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace" }}>Saldo Acumulado</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#34D399", letterSpacing: "-.02em", fontVariantNumeric: "tabular-nums", lineHeight: 1.2 }}>R$ 847,32</span>
           </div>
+          {/* User avatar button */}
+          <button style={{
+            display: "flex", alignItems: "center", gap: 9,
+            padding: "5px 12px 5px 6px",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 999,
+            background: "rgba(255,255,255,0.05)",
+            cursor: "pointer",
+            transition: "all .15s",
+          }}
+            onMouseOver={e => (e.currentTarget.style.background = "rgba(255,255,255,0.09)")}
+            onMouseOut={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+          >
+            {/* Avatar circle */}
+            <div style={{
+              width: 26, height: 26, borderRadius: "50%",
+              background: "linear-gradient(135deg,#A3E000,#5a8500)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 11, fontWeight: 800, color: "#050e03", flexShrink: 0,
+            }}>
+              {USER.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2)}
+            </div>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "#F5F5F7", letterSpacing: "-.01em" }}>
+              {USER.name.split(" ")[0]}
+            </span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ opacity: .4 }}>
+              <path d="M3 4.5L6 7.5L9 4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
       </header>
 

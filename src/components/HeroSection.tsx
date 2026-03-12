@@ -38,16 +38,18 @@ const HeroSection = () => {
 
       {/* ── Main content ── */}
       <div
-        className="relative z-10 flex flex-col items-center w-full px-4"
-        style={{ maxWidth: 420, paddingTop: 100, paddingBottom: 16 }}
+        className="relative z-10 w-full px-6 md:px-12 flex flex-col md:flex-row md:items-center md:justify-center md:gap-16"
+        style={{ maxWidth: 1100, margin: "0 auto", paddingTop: 100, paddingBottom: 32 }}
       >
+        {/* Left col: headline + CTAs */}
+        <div className="flex flex-col items-center md:items-start w-full md:w-1/2">
         {/* Headline */}
         <h1
-          className="text-white font-extrabold text-center mb-4"
+          className="text-white font-extrabold text-center md:text-left mb-6"
           style={{
             lineHeight: 1.2,
             fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: "clamp(22px, 5.5vw, 40px)",
+            fontSize: "clamp(24px, 3.2vw, 52px)",
             letterSpacing: "-0.5px",
             textShadow: "0 4px 24px rgba(0,0,0,0.7)",
           }}
@@ -64,11 +66,45 @@ const HeroSection = () => {
           em lucro no seu bolso.
         </h1>
 
-        {/* VSL card */}
+        {/* CTA buttons — visible on desktop beside video */}
+        <div className="hidden md:flex flex-col gap-3 w-full" style={{ maxWidth: 420 }}>
+          <a
+            href="/transacao"
+            className="w-full text-center font-bold uppercase py-4 rounded-md transition-colors"
+            style={{
+              background: "#9acc14",
+              color: "#000",
+              letterSpacing: "1.5px",
+              fontSize: 16,
+            }}
+            onMouseOver={e => (e.currentTarget.style.background = "#86b311")}
+            onMouseOut={e => (e.currentTarget.style.background = "#9acc14")}
+          >
+            COMPRAR TUPAN AGORA
+          </a>
+          <a
+            href="/#calculadora"
+            className="w-full text-center font-bold uppercase py-4 rounded-md backdrop-blur-md transition-colors"
+            style={{
+              background: "rgba(0,0,0,0.30)",
+              border: "1px solid rgba(154,204,20,0.5)",
+              color: "#9acc14",
+              letterSpacing: "1.5px",
+              fontSize: 16,
+            }}
+            onMouseOver={e => (e.currentTarget.style.background = "rgba(154,204,20,0.1)")}
+            onMouseOut={e => (e.currentTarget.style.background = "rgba(0,0,0,0.30)")}
+          >
+            CALCULAR LUCROS
+          </a>
+        </div>
+        </div>
+
+        {/* Right col: VSL card */}
+        <div className="w-full md:w-1/2 mt-6 md:mt-0">
         <div
           className="w-full rounded-xl overflow-hidden mb-4"
           style={{
-            maxHeight: 220,
             aspectRatio: "16/9",
             position: "relative",
             background: "#000",
@@ -91,11 +127,14 @@ const HeroSection = () => {
             className="absolute inset-0 w-full h-full"
           />
         </div>
+        </div>
 
-        {/* CTA buttons */}
+        {/* CTA buttons — mobile only (below video) */}
+        <div className="flex md:hidden flex-col gap-3 w-full">
+        {/* CTA primary */}
         <a
           href="/transacao"
-          className="w-full text-center font-bold uppercase py-4 rounded-md mb-4 transition-colors"
+          className="w-full text-center font-bold uppercase py-4 rounded-md mb-0 transition-colors"
           style={{
             background: "#9acc14",
             color: "#000",
@@ -121,6 +160,7 @@ const HeroSection = () => {
         >
           CALCULAR LUCROS
         </a>
+        </div>
       </div>
 
       {/* ── Authority footer ── */}

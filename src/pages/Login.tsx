@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import logoSite from "../assets/logo-site.png";
 
 type Plan = {
   id: number; valor: number; pct: number; diario: number; final: number;
@@ -215,8 +216,7 @@ export default function Login() {
         {/* Topbar */}
         <header className="lg-topbar">
           <a href="/" className="lg-logo">
-            <div className="lg-logo-mark">T</div>
-            <span className="lg-logo-name">TUPAN</span>
+            <img src={logoSite} alt="TUPAN" style={{ height: 34, width: "auto", display: "block" }} />
           </a>
           <a href="/transacao" className="lg-back">
             ← Voltar

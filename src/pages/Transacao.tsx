@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import logoSite from "../assets/logo-site.png";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const PIX_CHAVE =
@@ -386,14 +387,22 @@ export default function Transacao() {
         {/* ── Topbar ── */}
         <header className="tx-topbar">
           <a href="/" className="tx-logo">
-            <div className="tx-logo-mark">T</div>
-            <span className="tx-logo-name">TUPAN</span>
+            <img src={logoSite} alt="TUPAN" style={{ height: 34, width: "auto", display: "block" }} />
           </a>
-          <div className="tx-countdown">
-            <span className="tx-countdown-fire">🔥</span>
-            <span className="tx-countdown-label">OFERTA EXPIRA EM</span>
-            <span className="tx-countdown-time">{countdown}</span>
-          </div>
+          <a href="/login" style={{
+            padding: "8px 20px",
+            border: "1px solid #A3E000",
+            borderRadius: 8,
+            color: "#A3E000",
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontWeight: 700,
+            fontSize: 14,
+            textDecoration: "none",
+            transition: "background .15s",
+          }}
+            onMouseOver={e => (e.currentTarget.style.background = "rgba(163,224,0,0.1)")}
+            onMouseOut={e => (e.currentTarget.style.background = "transparent")}
+          >Entrar</a>
         </header>
 
 
